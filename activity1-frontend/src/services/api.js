@@ -5,27 +5,17 @@ export async function registerUser(userData) {
     `${API_BASE_URL}/register`,
     {
       method: "POST",
-
       headers: {
         "Content-Type": "application/json",
       },
-
       body: JSON.stringify(userData),
     }
   );
 
-  let data;
-
-  try {
-    data = await response.json();
-  } catch {
-    data = {};
-  }
+  const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Registration failed"
-    );
+    throw new Error("Registration failed");
   }
 
   return data;
@@ -36,27 +26,18 @@ export async function loginUser(userData) {
     `${API_BASE_URL}/login`,
     {
       method: "POST",
-
       headers: {
         "Content-Type": "application/json",
       },
-
       body: JSON.stringify(userData),
     }
   );
 
-  let data;
 
-  try {
-    data = await response.json();
-  } catch {
-    data = {};
-  }
+  const data = await response.text();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Login failed"
-    );
+    throw new Error(data || "Invalid email or password");
   }
 
   return data;

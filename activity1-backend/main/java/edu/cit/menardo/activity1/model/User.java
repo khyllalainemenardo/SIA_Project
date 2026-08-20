@@ -3,7 +3,10 @@ package edu.cit.menardo.activity1.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "users")
+@Table(
+        name = "users",
+        uniqueConstraints = @UniqueConstraint(columnNames = "email")
+)
 public class User {
 
     @Id
@@ -11,11 +14,28 @@ public class User {
     private Long id;
 
     private String username;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
     private String password;
+
+    public User() {
+    }
+
+    public User(Long id, String username, String email, String password) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUsername() {

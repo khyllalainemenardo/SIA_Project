@@ -6,7 +6,7 @@ function Login() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
@@ -25,20 +25,24 @@ function Login() {
     setError("");
 
     // Client-side validation
-    if (!formData.username || !formData.password) {
-      setError("Username and password are required.");
+    if (!formData.email || !formData.password) {
+      setError("Email and password are required.");
       return;
     }
 
     try {
       const response = await loginUser(formData);
 
-      console.log(response);
+      console.log("Login response:", response);
 
-      // Redirect to dashboard
-      navigate("/dashboard");
+      if (response === "Login successful") {
+        navigate("/dashboard");
+      } else {
+        setError(response);
+      }
 
     } catch (error) {
+      console.error(error);
       setError(error.message);
     }
   };
@@ -55,14 +59,14 @@ function Login() {
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Username</label>
+          <label>Email</label>
 
           <input
-            type="text"
-            name="username"
-            value={formData.username}
+            type="email"
+            name="email"
+            value={formData.email}
             onChange={handleChange}
-            placeholder="Enter username"
+            placeholder="Enter email"
           />
         </div>
 

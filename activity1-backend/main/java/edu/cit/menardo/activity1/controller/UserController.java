@@ -2,10 +2,15 @@ package edu.cit.menardo.activity1.controller;
 
 import edu.cit.menardo.activity1.model.User;
 import edu.cit.menardo.activity1.repository.UserRepository;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
 
     private final UserRepository userRepository;
@@ -14,27 +19,45 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
+    // REGISTER
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        return userRepository.save(user);
-    }
+    public ResponseEntity<String> register(@RequestBody User user) {
 
-    @PostMapping("/login")
-    public String login(@RequestBody User user) {
+        Optional<User> existingUser =
+                userRepository.findByEmail(user.getEmail());
 
-        User existingUser = userRepository.findByEmail(user.getEmail());
-
-        if (existingUser != null &&
-                existingUser.getPassword().equals(user.getPassword())) {
-
-            return "Login successful";
+        if (existingUser.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Email already exists");
         }
 
-        return "Invalid email or password";
+        userRepository.save(user);
+
+        return ResponseEntity.ok("Registration successful");
     }
 
-    @GetMapping("/user/{id}")
-    public User getUser(@PathVariable Long id) {
-        return userRepository.findById(id).orElse(null);
+
+    // LOGIN
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody User user) {
+
+        Optional<User> existingUser =
+                userRepository.findByEmail(user.getEmail());
+
+        if (existingUser.isPresent()) {
+
+            User foundUser = existingUser.get();
+
+            if (foundUser.getPassword()
+                    .equals(user.getPassword())) {
+
+                return ResponseEntity.ok("Login successful");
+            }
+        }
+
+        return ResponseEntity
+                .status(401)
+                .body("Invalid email or password");
     }
 }
